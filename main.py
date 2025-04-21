@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from router import review_router
+from router.review import review_router
 
 app = FastAPI()
 
