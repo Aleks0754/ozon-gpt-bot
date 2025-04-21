@@ -8,11 +8,10 @@ review_router = APIRouter()
 class ReviewRequest(BaseModel):
     text: str
 
-@router.post("/reply")
+@review_router.post("/reply")
 async def reply_to_review(request: ReviewRequest):
     reply = generate_reply(request.text)
 
-    # Отправка уведомления в Telegram
     send_telegram_message(
         f"📩 Новый отзыв:\n{request.text}\n\n🤖 Сгенерированный ответ:\n{reply}"
     )
