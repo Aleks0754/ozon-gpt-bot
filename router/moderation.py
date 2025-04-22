@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from services.review_storage import get_all_reviews, update_review_status
 
-router = APIRouter()
+moderation_router = APIRouter()
 
 @router.get("/api/reviews")
 def fetch_reviews():
