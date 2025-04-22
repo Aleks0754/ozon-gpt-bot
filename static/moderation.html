@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Модерация отзывов</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    h1 { font-size: 24px; }
+    table { border-collapse: collapse; width: 100%; }
+    td, th { border: 1px solid #ccc; padding: 8px; }
+    button { padding: 5px 10px; }
+  </style>
+</head>
+<body>
+  <h1>Модерация отзывов</h1>
+  <table id="table">
+    <tr><th>Отзыв</th><th>Ответ</th><th>Действие</th></tr>
+  </table>
+
+<script>
+fetch("/api/reviews")
+  .then(res => res.json())
+  .then(data => {
+    const table = document.getElementById("table");
+    data.forEach((item, i) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `<td>${item.text}</td><td>${item.reply}</td><td>${item.status === 'pending'
+        ? `<button onclick="act(${i}, 'approve')">✅</button> <button onclick="act(${i}, 'reject')">❌</button>`
+        : item.status}</td>`;
+      table.appendChild(row);
+    });
+  });
+
+function act(index, action) {
+  fetch(`/api/reviews/${index}/${action}`, { method: "POST" })
+    .then(() => location.reload());
+}
+</script>
+</body>
+</html>

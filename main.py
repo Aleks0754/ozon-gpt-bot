@@ -1,22 +1,28 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from router.review import review_router
-from moderation import router as moderation_router
-import os
+from router.moderation import moderation_router
 
 app = FastAPI()
 
 app.include_router(review_router)
 app.include_router(moderation_router)
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 def serve_home():
-    file_path = "static/index.html"
-    if os.path.exists(file_path):
-        with open(file_path, "r", encoding="utf-8") as f:
-            return f.read()
-    raise HTTPException(status_code=404, detail="index.html not found")
+    return FileResponse("static/index.html")
+
+@app.get("/moderation", response_class=HTMLResponse)
+def serve_moderation():
+    return FileResponse("static/moderation.html")
