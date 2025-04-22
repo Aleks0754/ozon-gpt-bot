@@ -1,4 +1,4 @@
-iimport os
+import os
 import requests
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
