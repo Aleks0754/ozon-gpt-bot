@@ -2,11 +2,13 @@ from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from router.review import review_router
+from moderation import router as moderation_router
 import os
 
 app = FastAPI()
 
 app.include_router(review_router)
+app.include_router(moderation_router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 

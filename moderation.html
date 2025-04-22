@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Модерация отзывов</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        table { width: 100%%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #eee; }
+        button { padding: 6px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Модерация отзывов</h1>
+    <div id="content">Загрузка...</div>
+
+    <script>
+        fetch("/moderation/data").then(r => r.json()).then(data => {
+            const rows = data.map((item, idx) => `
+                <tr>
+                    <td>${item.text}</td>
+                    <td>${item.reply}</td>
+                    <td>
+                        <form method="post" action="/moderation/approve">
+                            <input type="hidden" name="index" value="${idx}">
+                            <button type="submit">✅ Отправить</button>
+                        </form>
+                    </td>
+                </tr>
+            `).join("");
+            document.getElementById("content").innerHTML = `
+                <table>
+                    <thead><tr><th>Отзыв</th><th>Ответ</th><th>Действие</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+        });
+    </script>
+</body>
+</html>
