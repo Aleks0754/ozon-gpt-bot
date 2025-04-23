@@ -1,55 +1,42 @@
+
 import json
-from pathlib import Path
+from typing import Literal
+from services.telegram_notify import send_telegram_message
 
-STORAGE_FILE = Path("reviews.json")
+REVIEW_FILE = "data/reviews.json"
 
-# Временное хранилище для связи message_id и индекса
-INDEX_TO_MESSAGE = {}
+def _load_reviews():
+    try:
+        with open(REVIEW_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
 
+def _save_reviews(reviews):
+    with open(REVIEW_FILE, "w", encoding="utf-8") as f:
+        json.dump(reviews, f, ensure_ascii=False, indent=2)
 
-def _load_data():
-    if STORAGE_FILE.exists():
-        return json.loads(STORAGE_FILE.read_text(encoding="utf-8"))
-    return []
+def save_review(text: str, reply: str):
+    reviews = _load_reviews()
+    review = {"text": text, "reply": reply, "status": "pending"}
+    reviews.append(review)
+    _save_reviews(reviews)
+    send_telegram_message(
+        f"📮 Новый отзыв:
+{text}
 
-def _save_data(data):
-    STORAGE_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+🤖 Сгенерированный ответ:
+{reply}"
+    )
 
-def save_review(text, reply):
-    from services.telegram_notify import send_telegram_message_with_buttons
-    data = _load_data()
-    new_item = {"text": text, "reply": reply, "status": "pending"}
-    data.append(new_item)
-    _save_data(data)
-    index = len(data) - 1
-    message_id = send_telegram_message_with_buttons(text, reply, index)
-    INDEX_TO_MESSAGE[index] = message_id
+def get_all_reviews(status: Literal["all", "pending", "approved", "rejected"] = "all"):
+    reviews = _load_reviews()
+    if status == "all":
+        return reviews
+    return [r for r in reviews if r["status"] == status]
 
-def get_all_reviews(status: str = None):
-    data = _load_data()
-    if status:
-        return [r for r in data if r.get("status") == status]
-    return data
-
-def update_review_status(index, status):
-    from services.telegram_notify import send_telegram_message
-    data = _load_data()
-    if 0 <= index < len(data):
-        data[index]["status"] = status
-        _save_data(data)
-
-        if status == "approved":
-            send_telegram_message(
-                f"✅ Отзыв подтверждён:\n{data[index]['text']}\n\nОтвет:\n{data[index]['reply']}"
-            )
-
-s.telegram_notify import send_telegram_message
-    data = _load_data()
-    if 0 <= index < len(data):
-        data[index]["status"] = status
-        _save_data(data)
-
-        if status == "approved":
-            send_telegram_message(
-                f"✅ Отзыв подтверждён:\n{data[index]['text']}\n\nОтвет:\n{data[index]['reply']}"
-            )
+def update_review_status(index: int, status: Literal["approved", "rejected"]):
+    reviews = _load_reviews()
+    if 0 <= index < len(reviews):
+        reviews[index]["status"] = status
+        _save_reviews(reviews)
