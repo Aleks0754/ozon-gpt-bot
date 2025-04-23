@@ -25,8 +25,11 @@ def save_review(text, reply):
     message_id = send_telegram_message_with_buttons(text, reply, index)
     INDEX_TO_MESSAGE[index] = message_id
 
-def get_all_reviews():
-    return _load_data()
+def get_all_reviews(status: str = None):
+    data = _load_data()
+    if status:
+        return [r for r in data if r.get("status") == status]
+    return data
 
 def update_review_status(index, status):
     from services.telegram_notify import send_telegram_message
