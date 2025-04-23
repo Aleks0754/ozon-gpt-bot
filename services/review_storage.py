@@ -10,11 +10,11 @@ def load_reviews():
     with open(REVIEW_FILE, "r") as f:
         return json.load(f)
 
-def save_reviews(reviews):
+def save_reviews(reviews)ews(reviews):
     with open(REVIEW_FILE, "w") as f:
         json.dump(reviews, f, ensure_ascii=False, indent=2)
 
-def save_review(text, reply):
+def save_reviews(reviews)ew(text, reply):
     reviews = load_reviews()
     review = {
         "text": text,
@@ -22,7 +22,7 @@ def save_review(text, reply):
         "status": "pending"
     }
     reviews.append(review)
-    save_reviews(reviews)
+    save_reviews(reviews)ews(reviews)
     send_telegram_message_with_buttons(text, reply, len(reviews) - 1)
 
 def get_all_reviews(status=None):
@@ -35,4 +35,4 @@ def update_review_status(index, status):
     reviews = load_reviews()
     if 0 <= index < len(reviews):
         reviews[index]["status"] = status
-        save_reviews(reviews)
+        save_reviews(reviews)ews(reviews)
