@@ -6,9 +6,12 @@ from services.telegram_notify import send_telegram_message_with_buttons
 REVIEWS_PATH = "data/reviews.json"
 os.makedirs("data", exist_ok=True)
 
+# Создаём файл, если его нет (при первом запуске)
+if not os.path.exists(REVIEWS_PATH):
+    with open(REVIEWS_PATH, "w", encoding="utf-8") as f:
+        json.dump([], f)
+
 def load_reviews():
-    if not os.path.exists(REVIEWS_PATH):
-        return []
     with open(REVIEWS_PATH, "r", encoding="utf-8") as f:
         try:
             return json.load(f)
