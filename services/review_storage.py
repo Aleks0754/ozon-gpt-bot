@@ -1,6 +1,6 @@
 import json
 import os
-from services.telegram_notify import send_telegram_message
+from services.telegram_notify import send_telegram_message_with_buttons
 
 REVIEW_FILE = "reviews.json"
 
@@ -23,7 +23,7 @@ def save_review(text, reply):
     }
     reviews.append(review)
     save_reviews(reviews)
-    send_telegram_message(f"📩 Новый отзыв:\n{text}\n\n🤖 Ответ:\n{reply}")
+    send_telegram_message_with_buttons(text, reply, len(reviews) - 1)
 
 def get_all_reviews(status=None):
     reviews = load_reviews()
