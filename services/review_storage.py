@@ -42,3 +42,14 @@ def update_review_status(index, status):
             send_telegram_message(
                 f"✅ Отзыв подтверждён:\n{data[index]['text']}\n\nОтвет:\n{data[index]['reply']}"
             )
+
+s.telegram_notify import send_telegram_message
+    data = _load_data()
+    if 0 <= index < len(data):
+        data[index]["status"] = status
+        _save_data(data)
+
+        if status == "approved":
+            send_telegram_message(
+                f"✅ Отзыв подтверждён:\n{data[index]['text']}\n\nОтвет:\n{data[index]['reply']}"
+            )
