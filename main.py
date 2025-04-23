@@ -4,8 +4,10 @@ from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from router.review import review_router
 from router.moderation import moderation_router
+from services.telegram_polling import start_polling
 
 app = FastAPI()
+start_polling()
 
 app.include_router(review_router)
 app.include_router(moderation_router)
