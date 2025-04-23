@@ -1,22 +1,10 @@
 
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-import json
-import os
+from services.review_storage import get_all_reviews, update_review_status
+from services.telegram_notify import send_telegram_message
 
 router = APIRouter()
-
-LOG_PATH = "review_log.json"
-
-def load_log():
-    if not os.path.exists(LOG_PATH):
-        return []
-    with open(LOG_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-def save_log(data):
-    with open(LOG_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
 
 @router.get("/moderation")
 def moderation_page():
@@ -25,12 +13,16 @@ def moderation_page():
 
 @router.get("/moderation/data")
 def get_data():
-    return load_log()
+    reviews = get_all_reviews()
+    formatted = [{"index": i, **r} for i, r in reviews]
+    return JSONResponse(content=formatted)
 
 @router.post("/moderation/approve")
 def approve(index: int = Form(...)):
-    log = load_log()
-    item = log[index]
-    from services.telegram_notify import send_telegram_message
-    send_telegram_message(f"✅ Одобрено:\n{item['text']}\n\nОтвет:\n{item['reply']}")
+    update_review_status(index, "approved")
+    return RedirectResponse(url="/moderation", status_code=302)
+
+@router.post("/moderation/reject")
+def reject(index: int = Form(...)):
+    update_review_status(index, "rejected")
     return RedirectResponse(url="/moderation", status_code=302)
