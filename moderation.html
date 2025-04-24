@@ -8,7 +8,7 @@
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background-color: #eee; }
-    button { padding: 6px 10px; }
+    button { padding: 6px 10px; margin: 0 2px; }
     select { padding: 6px; margin-bottom: 10px; }
   </style>
 </head>
@@ -31,20 +31,19 @@
       fetch(`/api/reviews?status=${filter}`)
         .then(r => r.json())
         .then(data => {
-          const rows = data.map(([index, item]) => `
+          const rows = data.map(item => `
             <tr>
               <td>${item.text}</td>
               <td>${item.reply}</td>
               <td>
-                ${item.status}
                 ${item.status === "new" ? `
-                  <form method="post" action="/api/reviews/${index}/approve" style="display:inline;">
+                  <form method="post" action="/api/reviews/${item.index}/approve" style="display:inline;">
                     <button type="submit">✅</button>
                   </form>
-                  <form method="post" action="/api/reviews/${index}/reject" style="display:inline;">
+                  <form method="post" action="/api/reviews/${item.index}/reject" style="display:inline;">
                     <button type="submit">❌</button>
                   </form>
-                ` : ""}
+                ` : item.status}
               </td>
             </tr>
           `).join("");
