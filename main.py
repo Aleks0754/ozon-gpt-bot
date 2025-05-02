@@ -84,5 +84,29 @@ def moderation_page():
     with open("moderation.html", "r", encoding="utf-8") as f:
         return HTMLResponse(content=f.read())
 
+@app.get("/")
+def root():
+    return {"message": "ozon-gpt-bot is alive!"}
+
+@app.get("/moderation")
+def moderation_page():
+    with open("moderation.html", "r", encoding="utf-8") as f:
+        return HTMLResponse(content=f.read())
+
+@app.get("/api/reviews")
+def api_reviews(status: str = "all"):
+    return JSONResponse(get_all_reviews(status))
+
+@app.post("/api/reviews/{index}/approve")
+def approve(index: int):
+    update_review_status(index, "approved")
+    return {"status": "ok"}
+
+@app.post("/api/reviews/{index}/reject")
+def reject(index: int):
+    update_review_status(index, "rejected")
+    return {"status": "ok"}
+
+
 # Подключение static, если понадобится
 app.mount("/static", StaticFiles(directory="static"), name="static")
