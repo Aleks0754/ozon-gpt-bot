@@ -107,6 +107,12 @@ def reject(index: int):
     update_review_status(index, "rejected")
     return {"status": "ok"}
 
+@app.get("/test-review")
+def test_review():
+    save_review("Очень красивый дракон", "Спасибо! Он охраняет удачу 🐉")
+    return {"status": "test sent"}
+
+
 
 # Подключение static, если понадобится
 app.mount("/static", StaticFiles(directory="static"), name="static")
